@@ -1,8 +1,37 @@
-import Reader as rd
+import reader as rd
 import numpy as np
 import cnn as cn
 from math import exp
 from matplotlib import pyplot as plt
+import neural_networks as nn
+import cnn_evaluate_parameters as eval
+
+
+def backPropagationTest():
+    numFilters = 2;
+    filterDim = 9;
+    poolDim = 5;
+    (images, labels, testImages, testlables) = rd.read_mnist() 
+    images = (images)/255.0
+    images = images[1:10,:,:]
+    labels = labels[1:10]
+
+    print images.shape
+    print labels.shape
+    neural_net = nn.NeuralNetworks()
+    imageDim = 28
+    nclasses = 10
+
+    (cLayer,pLayer) = neural_net.init(numFilters,filterDim,nclasses,imageDim,poolDim)
+    weights = [pLayer.weights.ravel(),cLayer.weights.ravel(), pLayer.bias.ravel(), cLayer.bias.ravel()]
+    (cost, grad) = eval.evaluate (images, labels, cLayer, pLayer, poolDim)
+    #x = eval.evaluate(image,label,cLayer,pLayer,poolDim)
+
+    numgrad = eval.computeNumericalGradient(eval.evaluate,images,labels,cLayer,pLayer,poolDim)
+    print "Current Gradiant"
+    print grad.shape
+    print numgrad
+    print((numgrad[0] - grad[1][0]))
 
 def convolutionTest():
     (images, labels, testImages, testlables) = rd.read_mnist() 
@@ -72,5 +101,5 @@ def convolutionTest():
 
 
 if (__name__ == '__main__'):
-    convolutionTest()
+    backPropagationTest()
 

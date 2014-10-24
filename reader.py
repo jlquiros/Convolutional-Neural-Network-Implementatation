@@ -4,6 +4,7 @@ from PIL import Image
 import pylab
 from matplotlib import pyplot as plt
 
+
 def read_mnist():
     data = read_data(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/train-images.idx3-ubyte')
     label = read_label(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/train-labels.idx1-ubyte')
@@ -16,29 +17,24 @@ def read_mnist():
         print (label[number])
         plt.show()
         index += 1
-    ## Preparing input
-    test = data[10000:15000,:,:]
-    test_label = label[10000:15000]
-    data = data[0:10000,:,:]
-    label = label[0:10000]
     return (data,label,test,test_label)
 
 def testWithImage():
-  img = Image.open(open('../res/data/randomimages/3wolfmoon.jpg'))
-  img = np.asarray(img, dtype='float64') / 256
-  img_ = img.swapaxes(0, 2).swapaxes(1, 2).reshape(1, 3, 639, 516)
-  filtered_img = cp.Convolute(img_)
-  # plot original image and first and second components of output
-  pylab.subplot(1, 3, 1); pylab.axis('off'); pylab.imshow(img)
-  pylab.gray();
-  # recall that the convOp output (filtered image) is actually a "minibatch",
-  # of size 1 here, so we take index 0 in the first dimension:
-  pylab.subplot(1, 3, 2); pylab.axis('off'); pylab.imshow(filtered_img[0, 0, :, :])
-  print filtered_img.shape
-  filtered_img = cp.max_pool2d(filtered_img,(2,2))
-  print filtered_img.shape
-  pylab.subplot(1, 3, 3); pylab.axis('off'); pylab.imshow(filtered_img[0, 0, :, :])
-  pylab.show()
+    img = Image.open(open('../res/data/randomimages/3wolfmoon.jpg'))
+    img = np.asarray(img, dtype='float64') / 256
+    img_ = img.swapaxes(0, 2).swapaxes(1, 2).reshape(1, 3, 639, 516)
+    filtered_img = cp.Convolute(img_)
+    # plot original image and first and second components of output
+    pylab.subplot(1, 3, 1); pylab.axis('off'); pylab.imshow(img)
+    pylab.gray();
+    # recall that the convOp output (filtered image) is actually a "minibatch",
+    # of size 1 here, so we take index 0 in the first dimension:
+    pylab.subplot(1, 3, 2); pylab.axis('off'); pylab.imshow(filtered_img[0, 0, :, :])
+    print filtered_img.shape
+    filtered_img = cp.max_pool2d(filtered_img,(2,2))
+    print filtered_img.shape
+    pylab.subplot(1, 3, 3); pylab.axis('off'); pylab.imshow(filtered_img[0, 0, :, :])
+    pylab.show()
 
 def read_data(type, file):
     if (type == 'mnistdb'):
