@@ -11,7 +11,7 @@ class ConvolutionNN(object):
     # input is of form (numImages, numInputFeatureMap, imageHeight, imageWidth)
     # W is of shape (numOutputFeatureMap, numInputFeatureMap, filterHeight, fiterWidth)
     # b is of shape (numOutputFeatureMap, 1)
-    def convolve(self, input, W = None, b = None):
+    def convolve(self, input):
 
         # Extracting useful info
         W = self.weights
@@ -47,14 +47,14 @@ class ConvolutionNN(object):
         filterDim = delta.shape[2]
         convDim = imageDim - filterDim + 1
 
-        convolvedFeatures = np.zeros((numImages, numFeatureMap, convDim[0], convDim[1]))
+        convolvedFeatures = np.zeros((numImages, numFeatureMap, convDim, convDim))
 
 
         # convolving error-filter mask  with input image that made the error calculation for given filter
         # this gives the gradient of filter parameters for all the input images
         for imageNum in range(0, numImages):
             for outFeatureNum in range(0, numFeatureMap):
-                convolvedImage = np.zeros((convDim[0],convDim[1]))
+                convolvedImage = np.zeros((convDim, convDim))
                 convolvedImage = scipy.signal.convolve2d(input[imageNum][0], np.rot90(delta[imageNum][outFeatureNum],2), 'valid') 
                 convolvedFeatures[imageNum][outFeatureNum] = convolvedImage
         

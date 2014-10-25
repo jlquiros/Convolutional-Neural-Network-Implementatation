@@ -9,29 +9,35 @@ def computeNumericalGradient(evaluator, images, labels, cLayer, pLayer, poolDim)
     numgrad = np.zeros(cLayer.weights.shape)
     epsilon = 1e-4
 
-    result = np.zeros(2)
+    result = np.zeros(4)
 
-    #pLayer.weights[0][0]  += epsilon
-    cLayer.weights[0][0][0][0]  += epsilon
-    #cLayer.bias[0] += epsilon
-    #pLayer.bias[0]  += epsilon
+    pLayer.weights[0][0]  += epsilon
     (pos, gradp) = evaluator(images, labels, cLayer, pLayer, poolDim)
-    #pLayer.bias[0]  -= 2 * epsilon
-    cLayer.weights[0][0][0][0]  -= 2 * epsilon
-    #cLayer.bias[0] -= 2 * epsilon
+    pLayer.weights[0][0]  -= 2 * epsilon
     (neg, gradn) = evaluator(images, labels, cLayer, pLayer, poolDim)
     result[0] = (pos-neg)/(2* epsilon)
-    cLayer.weights += epsilon
+    pLayer.weights[0][0] += epsilon
 
-    cLayer.weights[0][0][1][1] += epsilon
-    #pLayer.bias[0]  += epsilon
+    cLayer.weights[0][0][0][0]  += epsilon
     (pos, gradp) = evaluator(images, labels, cLayer, pLayer, poolDim)
-    #pLayer.bias[0]  -= 2 * epsilon
-    #cLayer.weights[0][0][0][0]  -= 2 * epsilon
-    cLayer.weights[0][0][1][1] -= 2 * epsilon
+    cLayer.weights[0][0][0][0]  -= 2 * epsilon
     (neg, gradn) = evaluator(images, labels, cLayer, pLayer, poolDim)
     result[1] = (pos-neg)/(2* epsilon)
-    cLayer.weights += epsilon
+    cLayer.weights[0][0][0][0] += epsilon
+
+    pLayer.bias[0]  += epsilon
+    (pos, gradp) = evaluator(images, labels, cLayer, pLayer, poolDim)
+    pLayer.bias[0]  -= 2 * epsilon
+    (neg, gradn) = evaluator(images, labels, cLayer, pLayer, poolDim)
+    result[2] = (pos-neg)/(2* epsilon)
+    pLayer.bias[0] += epsilon
+
+    cLayer.bias[0]  += epsilon
+    (pos, gradp) = evaluator(images, labels, cLayer, pLayer, poolDim)
+    cLayer.bias[0]  -= 2 * epsilon
+    (neg, gradn) = evaluator(images, labels, cLayer, pLayer, poolDim)
+    result[3] = (pos-neg)/(2* epsilon)
+    cLayer.bias[0] += epsilon
 
     return result 
     
@@ -54,7 +60,7 @@ def evaluate (input, target, cLayer, pLayer, poolDim):
     dim = dim * m
 
   classifierInput = np.reshape(sampledOutput,(input.shape[0],dim))
-  computedOutput = pLayer.propagate(classifierInput)
+  computedOutput = pLayer.feed_forward(classifierInput)
 
   # Create sparse indication vector for class labels
   lb = preprocessing.LabelBinarizer()
@@ -106,10 +112,10 @@ def evaluate (input, target, cLayer, pLayer, poolDim):
   bc_grad = bc_grad/(nInput)
 
   # propagating error to the input layer by convoluting with input image
-  reConvolutedValue =  cLayer.convolved(input, deltaCon)
+  reConvolutedValue =  cLayer.convolve_error(input, deltaCon)
   Wc_grad  =  np.sum(reConvolutedValue, axis = 0)/nInput
   Wc_grad = np.reshape(Wc_grad, cLayer.weights.shape)
 
-  grad = [Wd_grad.ravel(),Wc_grad.ravel(),bd_grad.ravel(),bc_grad.ravel()]
+  grad = {'gP' : Wd_grad, 'gC' : Wc_grad, 'gBp' : bd_grad, 'gBc' : bc_grad}
   return (cost,grad)
 

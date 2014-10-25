@@ -6,18 +6,21 @@ from matplotlib import pyplot as plt
 
 
 def read_mnist():
-    data = read_data(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/train-images.idx3-ubyte')
-    label = read_label(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/train-labels.idx1-ubyte')
-    label = label.flatten().T
-    index = 0
-    while (index < 0):
-        number = np.random.random() * 60000
-        number = number / 1
-        plot = plt.imshow(data[number])
-        print (label[number])
-        plt.show()
-        index += 1
-    return (data,label,test,test_label)
+    trainData = read_data(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/train-images.idx3-ubyte')
+    trainLabel = read_label(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/train-labels.idx1-ubyte')
+    testData = read_data(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/t10k-images.idx3-ubyte')
+    testLabel = read_label(type = 'mnistdb', file = '/home/zephyr/workspace/machine_learning/res/data/mnist/t10k-labels.idx1-ubyte')
+    trainLabel = trainLabel.flatten().T
+    testLabel = testLabel.flatten().T
+    #index = 0
+    #while (index < 0):
+    #    number = np.random.random() * 60000
+    #    number = number / 1
+    #    plot = plt.imshow(data[number])
+    #    print (label[number])
+    #    plt.show()
+    #    index += 1
+    return (trainData, trainLabel, testData, testLabel)
 
 def testWithImage():
     img = Image.open(open('../res/data/randomimages/3wolfmoon.jpg'))
